@@ -412,6 +412,12 @@ typedef unsigned __int32 uint32_t;
 #  include <crtdbg.h>
 #else
 #  include <stdint.h>
+#  ifndef _RPTF3
+#    define _RPTF3(rptno,msg,arg1,arg2,arg3)
+#  endif
+#  ifndef _CRT_WARN
+#    define _CRT_WARN
+#  endif
 #endif
 
 #elif __AVR__
