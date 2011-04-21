@@ -4,7 +4,9 @@ Improvements in 2.0.0:
   - CMake-based builds by François Kooman
   - Windows DLL exports
   - Fixed building on Windows
-  - Fixed Pan/Tilt using Sony EVI-D70 camera
+  - Fixed and tested with Sony EVI-D70
+     * set_pantilt_absolute_position
+     * set_pantilt_relative_position
 
 -- Original README --
 
