@@ -1,0 +1,23 @@
+ ==========================================================================
+
+  		           l  i  b  V  I  S  C  A
+
+	            The VISCA(tm) Camera Control Library
+
+   (C) 2002-2004 by Damien Douxchamps <ddouxchamps@users.sourceforge.net>
+
+==========================================================================
+		
+
+(This README is for version 1.0.0)
+
+Nothing special. You should know by now that this lib is for controlling a
+VISCA compliant camera (VISCA is a control protocol of Sony Corp.)
+
+This library should also compile under windows but this is untested.
+
+Comments, additional VISCA info, etc... are always welcome.
+
+Have fun,
+
+Damien

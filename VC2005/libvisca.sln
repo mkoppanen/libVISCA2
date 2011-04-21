@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvisca", "libvisca.vcproj", "{279DADCF-F9B4-4351-973B-439E8715C35B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "visca_cli", "visca_cli.vcproj", "{4CD46905-117E-43F5-B52E-EFD3E914A380}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{279DADCF-F9B4-4351-973B-439E8715C35B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{279DADCF-F9B4-4351-973B-439E8715C35B}.Debug|Win32.Build.0 = Debug|Win32
+		{279DADCF-F9B4-4351-973B-439E8715C35B}.Release|Win32.ActiveCfg = Release|Win32
+		{279DADCF-F9B4-4351-973B-439E8715C35B}.Release|Win32.Build.0 = Release|Win32
+		{4CD46905-117E-43F5-B52E-EFD3E914A380}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4CD46905-117E-43F5-B52E-EFD3E914A380}.Debug|Win32.Build.0 = Debug|Win32
+		{4CD46905-117E-43F5-B52E-EFD3E914A380}.Release|Win32.ActiveCfg = Release|Win32
+		{4CD46905-117E-43F5-B52E-EFD3E914A380}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

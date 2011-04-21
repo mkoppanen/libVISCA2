@@ -1,0 +1,69 @@
+libVISCA, (c) 2002-2008 Damien Douxchamps <http://damien.douxchamps.net/>
+
+2008-08-17 Damien Douxchamps
+
+   SVN 15: update changelog
+   SVN 14: remove CVS files in VC2005
+   SVN 13: remove unecessary files in VC2005
+   SVN 12: lots of changes and additions to reach the 1.1.0 version we had
+	   before we moved to SVN.
+   SVN 11: remove more useless files
+   SVN 10: remove useless files
+   SVN 09: move the src/ directory to visca/
+	
+2008-08-02 Damien Douxchamps
+
+   SVN 08: patch from Bastian Pfeging for RS232 input options.
+   SVN 07: change "interface" to "iface" since it's a reserved word
+	   on MS.
+   SVN 06: fix SVN versions
+   SVN 05: commit changelog
+   SVN 04: fixed a bit error in VISCA_set_address(). Thanks to
+	   James Bremner for spotting this.
+
+	
+Changes in version 1.0.1:
+   - Fixed pan position and moved a #include (Simon Cooper)
+	
+Changes in version 1.0.0:
+
+   - windows compatibility, thanks to Alexander Klaeser.
+   - D30/31 special functions added by Simon Bichler
+   - added a command-line control program by the same author.
+	
+Changes in version 0.06:
+
+   - Little bug corected by David Austin
+	
+Changes in version 0.05:
+	
+   - Pan/tilt extensions added, thanks to Mikael Rosbacke
+	
+Changes in version 0.04:
+
+   Jul 25, 2002, by Damien Douxchamps
+   - finished new packet structure and functions
+   - corrected some bug found by Luke Fletcher
+
+   Apr 16, 2002, by Damien Douxchamps
+   - new packet structure and associated functions.
+	
+Changes in version 0.03
+	
+   Apr 12, 2002, by Damien Douxchamps
+   - fixed an awful bug in packet generation: we wrote twice on packet[0]!
+     (thanks to Floyd)
+	
+Changes in version 0.02
+	
+   Apr 08, 2002, by Damien Douxchamps
+   - added all inquiries functions.
+   - moved #defines to .h
+	
+Changes in version 0.01
+	
+   Apr 07, 2002, by Damien Douxchamps
+   - initial release.
+   - commands fully functional
+   - almost no inquiries implemented
+   - basic error checking and error code propagation

@@ -1,0 +1,8 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/lib@LIB_SUFFIX@
+
+Name: VISCA library 
+Description: Protocol implementation of VISCA cameras control interface
+Version: @VERSION@ 
+Libs: -lvisca
