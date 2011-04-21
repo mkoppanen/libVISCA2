@@ -26,21 +26,18 @@
 #include <errno.h> /* Error number definitions */
 
 #ifndef WIN
-#  include <unistd.h> /* UNIX standard function definitions */
 #  include <termios.h> /* POSIX terminal control definitions */
 #  include <sys/ioctl.h>
+#else
+int usleep(uint32_t useconds)
+{
+  uint32_t microsecs = useconds / 1000;
+  Sleep (microsecs);
+  return 0;
+}
 #endif
 
 #define EVI_D30
-
-#ifdef _MSC_VER
-int usleep(uint32_t useconds)
-{
-    uint32_t microsecs = useconds / 1000;
-    Sleep (microsecs);
-    return 0;
-}
-#endif
 
 int main(int argc, char **argv)
 {
