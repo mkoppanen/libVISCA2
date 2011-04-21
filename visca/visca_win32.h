@@ -27,7 +27,7 @@
 #ifndef __LIBVISCA_WIN32_H__
 #define __LIBVISCA_WIN32_H__
 
-#ifdef _MSC_VER
+#ifdef WIN
 
 #ifndef int8_t
 typedef __int8 int8_t;
