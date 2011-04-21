@@ -341,7 +341,7 @@ get_md_obj_pos (returns the center position of the detection frame divided
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "visca/libvisca.h"
+#include "../visca/libvisca.h"
 #ifdef WIN
 #include <Windows.h>
 #include <crtdbg.h>
