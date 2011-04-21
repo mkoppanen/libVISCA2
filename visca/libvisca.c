@@ -64,14 +64,14 @@ VISCA_API uint32_t
 _VISCA_get_reply(VISCAInterface_t *iface, VISCACamera_t *camera)
 {
   // first message: -------------------
-  if ( !(_VISCA_get_packet(iface)!=VISCA_SUCCESS) ) 
+  if (_VISCA_get_packet(iface)!=VISCA_SUCCESS) 
     return VISCA_FAILURE;
   iface->type=iface->ibuf[1]&0xF0;
 
   // skip ack messages
   while (iface->type==VISCA_RESPONSE_ACK)
     {
-      if ( !(_VISCA_get_packet(iface)!=VISCA_SUCCESS) ) 
+      if (_VISCA_get_packet(iface)!=VISCA_SUCCESS) 
         return VISCA_FAILURE;
       iface->type=iface->ibuf[1]&0xF0;
     }
@@ -2468,7 +2468,7 @@ VISCA_set_pantilt_absolute_position(VISCAInterface_t *iface, VISCACamera_t *came
   _VISCA_append_byte(&packet, VISCA_PT_ABSOLUTE_POSITION);
   _VISCA_append_byte(&packet, pan_speed);
   _VISCA_append_byte(&packet, tilt_speed);
-  _VISCA_append_byte(&packet, (pan_pos & 0xf0000) >> 16);
+
   _VISCA_append_byte(&packet, (pan_pos & 0x0f000) >> 12);
   _VISCA_append_byte(&packet, (pan_pos & 0x00f00) >>  8);
   _VISCA_append_byte(&packet, (pan_pos & 0x000f0) >>  4);
@@ -2498,7 +2498,7 @@ VISCA_set_pantilt_relative_position(VISCAInterface_t *iface, VISCACamera_t *came
   _VISCA_append_byte(&packet, VISCA_PT_RELATIVE_POSITION);
   _VISCA_append_byte(&packet, pan_speed);
   _VISCA_append_byte(&packet, tilt_speed);
-  _VISCA_append_byte(&packet, (pan_pos & 0xf0000) >> 16);
+
   _VISCA_append_byte(&packet, (pan_pos & 0x0f000) >> 12);
   _VISCA_append_byte(&packet, (pan_pos & 0x00f00) >>  8);
   _VISCA_append_byte(&packet, (pan_pos & 0x000f0) >>  4);
