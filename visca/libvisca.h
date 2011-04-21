@@ -414,8 +414,6 @@ typedef unsigned __int32 uint32_t;
 #  include <stdint.h>
 #endif
 
-#endif
-
 #elif __AVR__
 
 #include "v24.h"
