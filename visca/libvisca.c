@@ -22,15 +22,6 @@
 #include "libvisca.h"
 
 #ifdef WIN
-#include <crtdbg.h>
-#elif __AVR__
-//#include <>
-#else
-//#include <>
-#endif
-
-
-#ifdef WIN
 # ifdef _DEBUG
 #  define DEBUG 1
 # else

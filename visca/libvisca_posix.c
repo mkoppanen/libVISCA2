@@ -26,7 +26,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include <libvisca.h>
+#include "libvisca.h"
 
 
 

@@ -408,8 +408,12 @@ typedef struct _VISCA_interface
 typedef unsigned __int8 uint8_t;
 typedef unsigned __int16 uint16_t;
 typedef unsigned __int32 uint32_t;
+
+#  include <crtdbg.h>
 #else
 #  include <stdint.h>
+#endif
+
 #endif
 
 #elif __AVR__

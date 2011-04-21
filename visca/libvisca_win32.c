@@ -25,10 +25,6 @@
 #include <errno.h>
 #include "libvisca.h"
 
-#ifdef _MSC_VER
-#  include <crtdbg.h>
-#endif
-
 /* implemented in libvisca.c
  */
 void _VISCA_append_byte(VISCAPacket_t *packet, unsigned char byte);
