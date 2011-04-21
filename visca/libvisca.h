@@ -412,6 +412,9 @@ typedef unsigned __int32 uint32_t;
 #  include <crtdbg.h>
 #else
 #  include <stdint.h>
+#  ifndef _RPTF0
+#    define _RPTF0(rptno,msg)
+#  endif
 #  ifndef _RPTF3
 #    define _RPTF3(rptno,msg,arg1,arg2,arg3)
 #  endif
