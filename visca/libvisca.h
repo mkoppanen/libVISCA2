@@ -24,9 +24,6 @@
 
 #if defined(_WIN32)||defined(WIN32)||defined(__WIN32__)
 #  define WIN
-#  include "visca_win32.h"
-#else 
-#  include <stdint.h>
 #endif
 
 /* API EXPORTS */
@@ -406,6 +403,14 @@ typedef struct _VISCA_interface
   int bytes;
   int type;
 } VISCAInterface_t;
+
+#ifdef _MSC_VER
+typedef unsigned __int8 uint8_t;
+typedef unsigned __int16 uint16_t;
+typedef unsigned __int32 uint32_t;
+#else
+#  include <stdint.h>
+#endif
 
 #elif __AVR__
 
