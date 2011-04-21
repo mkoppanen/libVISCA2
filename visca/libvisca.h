@@ -415,6 +415,9 @@ typedef unsigned __int32 uint32_t;
 #  ifndef _RPTF0
 #    define _RPTF0(rptno,msg)
 #  endif
+#  ifndef _RPTF1
+#    define _RPTF1(rptno,msg,arg1)
+#  endif
 #  ifndef _RPTF3
 #    define _RPTF3(rptno,msg,arg1,arg2,arg3)
 #  endif
