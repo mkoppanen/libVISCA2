@@ -1,6 +1,6 @@
 PROJECT(libvisca C)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-SET(VERSION "1.0.2")
+SET(VERSION "2.0.0")
 
 IF(UNIX)
     # Create PkgConfig file

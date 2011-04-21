@@ -1,5 +1,5 @@
 
-Improvements: 
+Improvements in 2.0.0: 
   
   - CMake-based builds by François Kooman
   - Windows DLL exports
@@ -8,7 +8,6 @@ Improvements:
 
 
 -- Original README --
-
 
  ==========================================================================
 
