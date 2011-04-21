@@ -20,12 +20,14 @@
  */
 
 #include <Windows.h>
-#include <crtdbg.h>
-
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
 #include "libvisca.h"
+
+#ifdef _MSC_VER
+#  include <crtdbg.h>
+#endif
 
 /* implemented in libvisca.c
  */
