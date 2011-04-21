@@ -22,7 +22,7 @@
 #ifndef __LIBVISCA_H__
 #define __LIBVISCA_H__
 
-#if defined(_WIN32)||defined(WIN32)||defined(__WIN32__)
+#if defined(_WIN32)||defined(WIN32)||defined(__WIN32__)||defined(_MSC_VER)
 #  define WIN
 #endif
 
@@ -424,9 +424,9 @@ typedef unsigned __int32 uint32_t;
 #  ifndef _CRT_WARN
 #    define _CRT_WARN
 #  endif
-#endif
+#endif /* _MSC_VER */
 
-#elif __AVR__
+#elif __AVR__ /* #ifdef WIN */
 
 #include "v24.h"
 
@@ -453,7 +453,7 @@ typedef struct _VISCA_interface
 	int type;
 } VISCAInterface_t;
 
-#else
+#else /* #ifdef WIN */
 
 #include <termios.h>
 #include <stdint.h>
@@ -484,7 +484,7 @@ typedef struct _VISCA_interface
 
 } VISCAInterface_t;
 
-#endif
+#endif /* #ifdef WIN */
 
 /* INTERFACE STRUCTURE -- this is only a forward declaration to the
  * structure. We declare a pointer to hide the platform specific code.
@@ -527,12 +527,6 @@ typedef struct _VISCA_packet
 /* GENERAL FUNCTIONS */
 
 VISCA_API uint32_t
-VISCA_open_serial(VISCAInterface_t *iface, const char *device_name);
-
-VISCA_API uint32_t
-VISCA_close_serial(VISCAInterface_t *iface);
-
-VISCA_API uint32_t
 VISCA_set_address(VISCAInterface_t *iface, int *camera_num);
 
 VISCA_API uint32_t
@@ -552,6 +546,9 @@ _VISCA_get_packet(VISCAInterface_t *iface);
 
 VISCA_API uint32_t
 VISCA_open_serial(VISCAInterface_t *iface, const char *device_name);
+
+VISCA_API uint32_t
+VISCA_unread_bytes(VISCAInterface_t *iface, unsigned char *buffer, uint32_t *buffer_size);
 
 VISCA_API uint32_t
 VISCA_close_serial(VISCAInterface_t *iface);
@@ -1155,4 +1152,4 @@ VISCA_get_register(VISCAInterface_t *iface, VISCACamera_t *camera, uint8_t reg_n
 } /* closing brace for extern "C" */
 #endif
 
-#endif
+#endif /* __LIBVISCA_H__ */

@@ -21,24 +21,36 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h> /* UNIX standard function definitions */
+#include "../visca/libvisca.h"
 #include <fcntl.h> /* File control definitions */
 #include <errno.h> /* Error number definitions */
-#include <termios.h> /* POSIX terminal control definitions */
-#include <sys/ioctl.h>
 
-#include "../visca/libvisca.h"
+#ifndef WIN
+#  include <unistd.h> /* UNIX standard function definitions */
+#  include <termios.h> /* POSIX terminal control definitions */
+#  include <sys/ioctl.h>
+#endif
 
 #define EVI_D30
 
-int
-main(int argc, char **argv)
+#ifdef _MSC_VER
+int usleep(uint32_t useconds)
+{
+    uint32_t microsecs = useconds / 1000;
+    Sleep (microsecs);
+    return 0;
+}
+#endif
+
+int main(int argc, char **argv)
 {
 
-  VISCAInterface_t interface;
+  VISCAInterface_t iface;
   VISCACamera_t camera;
+
   unsigned char packet[3000];
-  int i, bytes, camera_num;
+  int camera_num;
+  uint32_t i;
   uint8_t value;
   uint16_t zoom;
   int pan_pos, tilt_pos;
@@ -49,106 +61,106 @@ main(int argc, char **argv)
       exit(1);
     }
 
-  if (VISCA_open_serial(&interface, argv[1])!=VISCA_SUCCESS)
+  if (VISCA_open_serial(&iface, argv[1])!=VISCA_SUCCESS)
     {
       fprintf(stderr,"%s: unable to open serial device %s\n",argv[0],argv[1]);
       exit(1);
     }
 
-  interface.broadcast=0;
-  VISCA_set_address(&interface, &camera_num);
+  iface.broadcast=0;
+  VISCA_set_address(&iface, &camera_num);
   camera.address=1;
-  VISCA_clear(&interface, &camera);
+  VISCA_clear(&iface, &camera);
  
-  VISCA_get_camera_info(&interface, &camera);
+  VISCA_get_camera_info(&iface, &camera);
   fprintf(stderr,"Some camera info:\n------------------\n");
   fprintf(stderr,"vendor: 0x%04x\n model: 0x%04x\n ROM version: 0x%04x\n socket number: 0x%02x\n",
 	  camera.vendor, camera.model, camera.rom_version, camera.socket_num);
 
-  if (VISCA_set_zoom_value(&interface, &camera, 0x0000)!=VISCA_SUCCESS)
+  if (VISCA_set_zoom_value(&iface, &camera, 0x0000)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting zoom\n");
 
   usleep(500000);
 
-  if (VISCA_set_zoom_value(&interface, &camera, 0x4000)!=VISCA_SUCCESS)
+  if (VISCA_set_zoom_value(&iface, &camera, 0x4000)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting zoom\n");
 
   usleep(500000);
 
-  if (VISCA_set_zoom_value(&interface, &camera, 0x1234)!=VISCA_SUCCESS)
+  if (VISCA_set_zoom_value(&iface, &camera, 0x1234)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting zoom\n");
 
-  if (VISCA_get_zoom_value(&interface, &camera, &zoom)!=VISCA_SUCCESS)
+  if (VISCA_get_zoom_value(&iface, &camera, &zoom)!=VISCA_SUCCESS)
     fprintf(stderr,"error getting zoom\n");
   else
     fprintf(stderr,"Zoom value: 0x%04x\n",zoom);
 
   usleep(500000);
 
-  if (VISCA_set_zoom_value(&interface, &camera, 0x0000)!=VISCA_SUCCESS)
+  if (VISCA_set_zoom_value(&iface, &camera, 0x0000)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting zoom\n");
 
 
-  if (VISCA_get_power(&interface, &camera, &value)!=VISCA_SUCCESS)
+  if (VISCA_get_power(&iface, &camera, &value)!=VISCA_SUCCESS)
     fprintf(stderr,"error getting power\n");
   else
     fprintf(stderr,"power status: 0x%02x\n",value);
 
 
 #ifdef EVI_D30
-  if (VISCA_set_pantilt_reset(&interface, &camera)!=VISCA_SUCCESS)
+  if (VISCA_set_pantilt_reset(&iface, &camera)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting pan tilt home\n");
   else
     fprintf(stderr,"Setting pan tilt home\n");
 
-  if (VISCA_set_pantilt_absolute_position(&interface, &camera,5,5,-500,-200)!=VISCA_SUCCESS)
+  if (VISCA_set_pantilt_absolute_position(&iface, &camera,5,5,-500,-200)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting pan tilt absolute position with negative position\n");
   else
     fprintf(stderr,"Setting pan tilt absolute position\n");
 
   
-  if (VISCA_get_pantilt_position(&interface, &camera, &pan_pos, &tilt_pos)!=VISCA_SUCCESS)
+  if (VISCA_get_pantilt_position(&iface, &camera, &pan_pos, &tilt_pos)!=VISCA_SUCCESS)
     fprintf(stderr,"error getting pan tilt absolute position\n");
   else
     fprintf(stderr,"Absolute position, Pan value: %d, Tilt value: %d\n",pan_pos,tilt_pos);
 
 
-  if (VISCA_set_pantilt_absolute_position(&interface, &camera,18,14,500,200)!=VISCA_SUCCESS)
+  if (VISCA_set_pantilt_absolute_position(&iface, &camera,18,14,500,200)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting pan tilt absolute position with positive position\n");
   else
     fprintf(stderr,"Setting pan tilt absolute position\n");
 
-  if (VISCA_get_pantilt_position(&interface, &camera, &pan_pos, &tilt_pos)!=VISCA_SUCCESS)
+  if (VISCA_get_pantilt_position(&iface, &camera, &pan_pos, &tilt_pos)!=VISCA_SUCCESS)
     fprintf(stderr,"error getting pan tilt absolute position\n");
   else
     fprintf(stderr,"Absolute position, Pan value: %d, Tilt value: %d\n",pan_pos,tilt_pos);
 
 
-  if (VISCA_set_pantilt_home(&interface, &camera)!=VISCA_SUCCESS)
+  if (VISCA_set_pantilt_home(&iface, &camera)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting pan tilt home\n");
   else
     fprintf(stderr,"Setting pan tilt home\n");
 
 #endif
 
-  //if (VISCA_set_power(&interface, &camera, VISCA_ON)!=VISCA_SUCCESS)
+  //if (VISCA_set_power(&iface, &camera, VISCA_ON)!=VISCA_SUCCESS)
   //  fprintf(stderr,"error setting power\n");
 
   // read the rest of the data: (should be empty)
-  
-  VISCA_set_zoom_value(&interface, &camera, 0x0D00);
-  VISCA_set_shutter_value(&interface, &camera, 0x0D00);
 
-  //usleep(1000000);
-  ioctl(interface.port_fd, FIONREAD, &bytes);
-  if (bytes>0)
+  VISCA_set_zoom_value(&iface, &camera, 0x0D00);
+  VISCA_set_shutter_value(&iface, &camera, 0x0D00);
+
+  {
+    uint32_t buffer_size = 3000;
+    if (VISCA_unread_bytes(&iface, packet, &buffer_size)!=VISCA_SUCCESS)
     {
-      fprintf(stderr, "ERROR: %d bytes not processed: ", bytes);
-      read(interface.port_fd, &packet, bytes);
-      for (i=0;i<bytes;i++)
-	fprintf(stderr,"%2x ",packet[i]);
+      fprintf(stderr, "ERROR: %u bytes not processed", buffer_size);
+      for (i=0;i<buffer_size;i++)
+        fprintf(stderr,"%2x ",packet[i]);
       fprintf(stderr,"\n");
     }
-  VISCA_close_serial(&interface);
+  }
+  VISCA_close_serial(&iface);
   exit(0);
 }

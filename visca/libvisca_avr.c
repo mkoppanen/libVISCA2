@@ -141,6 +141,13 @@ VISCA_open_serial(VISCAInterface_t *iface, const char *device_name)
     return VISCA_SUCCESS;
 }
 
+uint32_t
+VISCA_unread_bytes(VISCAInterface_t *iface, unsigned char *buffer, uint32_t *buffer_size)
+{
+  // TODO
+  *buffer_size = 0;
+  return VISCA_SUCCESS;
+}
 
 uint32_t
 VISCA_close_serial(VISCAInterface_t *iface)
