@@ -1,3 +1,15 @@
+
+Improvements: 
+  
+  - CMake-based builds by François Kooman
+  - Windows DLL exports
+  - Fixed building on Windows
+  - Fixed Pan/Tilt using Sony EVI-D70 camera
+
+
+-- Original README --
+
+
  ==========================================================================
 
   		           l  i  b  V  I  S  C  A
