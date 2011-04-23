@@ -172,3 +172,9 @@ VISCA_close_serial(VISCAInterface_t *iface)
 	return VISCA_FAILURE;
 }
 
+uint32_t
+VISCA_usleep(uint32_t useconds)
+{
+  return (uint32_t) usleep(useconds);
+}
+

@@ -19,23 +19,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "../visca/libvisca.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../visca/libvisca.h"
+
 #include <fcntl.h> /* File control definitions */
 #include <errno.h> /* Error number definitions */
-
-#ifndef WIN
-#  include <termios.h> /* POSIX terminal control definitions */
-#  include <sys/ioctl.h>
-#else
-int usleep(uint32_t useconds)
-{
-  uint32_t microsecs = useconds / 1000;
-  Sleep (microsecs);
-  return 0;
-}
-#endif
 
 #define EVI_D30
 
@@ -45,9 +34,8 @@ int main(int argc, char **argv)
   VISCAInterface_t iface;
   VISCACamera_t camera;
 
-  unsigned char packet[3000];
+
   int camera_num;
-  uint32_t i;
   uint8_t value;
   uint16_t zoom;
   int pan_pos, tilt_pos;
@@ -68,21 +56,23 @@ int main(int argc, char **argv)
   VISCA_set_address(&iface, &camera_num);
   camera.address=1;
   VISCA_clear(&iface, &camera);
- 
+
   VISCA_get_camera_info(&iface, &camera);
   fprintf(stderr,"Some camera info:\n------------------\n");
   fprintf(stderr,"vendor: 0x%04x\n model: 0x%04x\n ROM version: 0x%04x\n socket number: 0x%02x\n",
 	  camera.vendor, camera.model, camera.rom_version, camera.socket_num);
 
+  VISCA_usleep(500000);
+
   if (VISCA_set_zoom_value(&iface, &camera, 0x0000)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting zoom\n");
 
-  usleep(500000);
+  VISCA_usleep(500000);
 
   if (VISCA_set_zoom_value(&iface, &camera, 0x4000)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting zoom\n");
 
-  usleep(500000);
+  VISCA_usleep(500000);
 
   if (VISCA_set_zoom_value(&iface, &camera, 0x1234)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting zoom\n");
@@ -92,7 +82,7 @@ int main(int argc, char **argv)
   else
     fprintf(stderr,"Zoom value: 0x%04x\n",zoom);
 
-  usleep(500000);
+  VISCA_usleep(500000);
 
   if (VISCA_set_zoom_value(&iface, &camera, 0x0000)!=VISCA_SUCCESS)
     fprintf(stderr,"error setting zoom\n");
@@ -149,9 +139,11 @@ int main(int argc, char **argv)
   VISCA_set_shutter_value(&iface, &camera, 0x0D00);
 
   {
+    unsigned char packet[3000];
     uint32_t buffer_size = 3000;
     if (VISCA_unread_bytes(&iface, packet, &buffer_size)!=VISCA_SUCCESS)
     {
+      uint32_t i;
       fprintf(stderr, "ERROR: %u bytes not processed", buffer_size);
       for (i=0;i<buffer_size;i++)
         fprintf(stderr,"%2x ",packet[i]);

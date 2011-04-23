@@ -21,7 +21,7 @@
 
 #include "libvisca.h"
 
-#ifdef WIN
+#ifdef VISCA_WIN
 # ifdef _DEBUG
 #  define DEBUG 1
 # else

@@ -23,20 +23,16 @@
 #define __LIBVISCA_H__
 
 #if defined(_WIN32)||defined(WIN32)||defined(__WIN32__)||defined(_MSC_VER)
-#  define WIN
-#endif
-
-/* API EXPORTS */
-#ifdef WIN
 #  ifdef DLL_EXPORTS
 #    define VISCA_API __declspec(dllexport)
 #  else
 #    define VISCA_API __declspec(dllimport)
 #  endif
+#  define VISCA_WIN
 #else
 #  define VISCA_API
+#  define VISCA_POSIX
 #endif
-
 
 /**********************/
 /* Message formatting */
@@ -376,7 +372,7 @@
 extern "C" {
 #endif
 
-#ifdef WIN
+#ifdef VISCA_WIN
 
 #include <windows.h>
 
@@ -426,7 +422,7 @@ typedef unsigned __int32 uint32_t;
 #  endif
 #endif /* _MSC_VER */
 
-#elif __AVR__ /* #ifdef WIN */
+#elif __AVR__
 
 #include "v24.h"
 
@@ -453,7 +449,7 @@ typedef struct _VISCA_interface
 	int type;
 } VISCAInterface_t;
 
-#else /* #ifdef WIN */
+#else
 
 #include <termios.h>
 #include <stdint.h>
@@ -484,7 +480,7 @@ typedef struct _VISCA_interface
 
 } VISCAInterface_t;
 
-#endif /* #ifdef WIN */
+#endif
 
 /* INTERFACE STRUCTURE -- this is only a forward declaration to the
  * structure. We declare a pointer to hide the platform specific code.
@@ -1147,6 +1143,9 @@ VISCA_set_register(VISCAInterface_t *iface, VISCACamera_t *camera, uint8_t reg_n
 VISCA_API uint32_t
 VISCA_get_register(VISCAInterface_t *iface, VISCACamera_t *camera, uint8_t reg_num, uint8_t* reg_val);
 
+/* Utility */
+VISCA_API uint32_t
+VISCA_usleep(uint32_t useconds);
 
 #ifdef __cplusplus
 } /* closing brace for extern "C" */

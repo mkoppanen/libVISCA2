@@ -339,21 +339,9 @@ get_md_obj_pos (returns the center position of the detection frame divided
                 by 48x30 pixels and a status: 1=UnDetect, 2=Detected)
 */
 
+#include "../visca/libvisca.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../visca/libvisca.h"
-#ifdef WIN
-#  ifdef _MSC_VER
-#    include <crtdbg.h>
-#  endif
-#include <windows.h>
-#else
-#include <unistd.h> /* UNIX standard function definitions */
-#include <termios.h> /* POSIX terminal control definitions */
-#include <sys/ioctl.h>
-#include <stdint.h>
-#endif
-
 #include <fcntl.h> /* File control definitions */
 #include <errno.h> /* Error number definitions */
 #include <string.h>
@@ -364,7 +352,7 @@ get_md_obj_pos (returns the center position of the detection frame divided
 
 /*The device the camera is attached to*/
 /*The default device the camera is attached to*/
-#ifdef WIN
+#ifdef VISCA_WIN
 char *ttydev = "COM1:";
 #else
  char *ttydev = "/dev/ttyS0";
@@ -481,23 +469,21 @@ void open_interface() {
 
 void close_interface()
 {
-#ifdef WIN
-  Sleep(2000);
-#else
   // read the rest of the data: (should be empty)
   unsigned char packet[3000];
-  int i, bytes;
+  uint32_t buffer_size = 3000;
 
-  ioctl(iface.port_fd, FIONREAD, &bytes);
-  if (bytes>0) {
-    fprintf(stderr, "ERROR: %d bytes not processed: ", bytes);
-    read(iface.port_fd, &packet, bytes);
-    for (i=0;i<bytes;i++) {
+  VISCA_usleep(2000);
+
+  if (VISCA_unread_bytes(&iface, packet, &buffer_size)!=VISCA_SUCCESS)
+  {
+    uint32_t i;
+    fprintf(stderr, "ERROR: %u bytes not processed", buffer_size);
+    for (i=0;i<buffer_size;i++)
       fprintf(stderr,"%2x ",packet[i]);
-    }
     fprintf(stderr,"\n");
   }
-#endif
+
   VISCA_close_serial(&iface);
 }
 

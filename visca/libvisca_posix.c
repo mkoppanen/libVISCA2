@@ -23,7 +23,6 @@
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <termios.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 
@@ -203,4 +202,10 @@ VISCA_close_serial(VISCAInterface_t *iface)
     }
   else
     return VISCA_FAILURE;
+}
+
+uint32_t
+VISCA_usleep(uint32_t useconds)
+{
+  return (uint32_t) usleep(useconds);
 }
