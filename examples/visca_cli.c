@@ -2060,7 +2060,7 @@ int doCommand(char *commandline, int *ret1, int *ret2, int *ret3) {
   }
 
   if (strcmp(command, "get_pantilt_position") == 0) {
-    uint16_t tmp1, tmp2;
+    int16_t tmp1, tmp2;
     if (VISCA_get_pantilt_position(&iface, &camera, &tmp1, &tmp1)
         != VISCA_SUCCESS){
       return 46;
