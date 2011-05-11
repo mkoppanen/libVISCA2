@@ -38,7 +38,7 @@ int main(int argc, char **argv)
   int camera_num;
   uint8_t value;
   uint16_t zoom;
-  int pan_pos, tilt_pos;
+  uint16_t pan_pos, tilt_pos;
 
   if (argc<2)
     {

@@ -995,7 +995,7 @@ VISCA_API uint32_t
 VISCA_get_pantilt_maxspeed(VISCAInterface_t *iface, VISCACamera_t *camera, uint8_t *max_pan_speed, uint8_t *max_tilt_speed);
 
 VISCA_API uint32_t
-VISCA_get_pantilt_position(VISCAInterface_t *iface, VISCACamera_t *camera, int *pan_position, int *tilt_position);
+VISCA_get_pantilt_position(VISCAInterface_t *iface, VISCACamera_t *camera, uint16_t *pan_position, uint16_t *tilt_position);
 
 VISCA_API uint32_t
 VISCA_get_datascreen(VISCAInterface_t *iface, VISCACamera_t *camera, uint8_t *status);

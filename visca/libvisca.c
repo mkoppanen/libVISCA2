@@ -2766,11 +2766,10 @@ VISCA_get_pantilt_maxspeed(VISCAInterface_t *iface, VISCACamera_t *camera, uint8
 }
 
 VISCA_API uint32_t
-VISCA_get_pantilt_position(VISCAInterface_t *iface, VISCACamera_t *camera, int *pan_position, int *tilt_position)
+VISCA_get_pantilt_position(VISCAInterface_t *iface, VISCACamera_t *camera, uint16_t *pan_position, uint16_t *tilt_position)
 {
   VISCAPacket_t packet;
   uint32_t err;
-  uint16_t pan_pos, tilt_pos;
 
   _VISCA_init_packet(&packet);
   _VISCA_append_byte(&packet, VISCA_INQUIRY);
@@ -2781,13 +2780,8 @@ VISCA_get_pantilt_position(VISCAInterface_t *iface, VISCACamera_t *camera, int *
     return err;
   else
     {
-      pan_pos  = ((iface->ibuf[3] & 0xf) << 12) + ((iface->ibuf[4] & 0xf) << 8) + ((iface->ibuf[5] & 0xf) << 4) + (iface->ibuf[6] & 0xf); 
-      tilt_pos = ((iface->ibuf[7] & 0xf) << 12) + ((iface->ibuf[8] & 0xf) << 8) + ((iface->ibuf[9] & 0xf) << 4) + (iface->ibuf[10] & 0xf); 
-
-      if (!iface->ibuf[2]) *pan_position=pan_pos;
-      else *pan_position=((int)pan_pos) - 65536;
-      if (tilt_pos<0x8000) *tilt_position=tilt_pos;
-      else *tilt_position=((int)tilt_pos) - 65536;
+      *pan_position  = ((iface->ibuf[2] & 0xf) << 12) + ((iface->ibuf[3] & 0xf) << 8) + ((iface->ibuf[4] & 0xf) << 4) + (iface->ibuf[5] & 0xf);
+      *tilt_position = ((iface->ibuf[6] & 0xf) << 12) + ((iface->ibuf[7] & 0xf) << 8) + ((iface->ibuf[8] & 0xf) << 4) + (iface->ibuf[9] & 0xf);
 
       return VISCA_SUCCESS;
     }
