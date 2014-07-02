@@ -1135,7 +1135,7 @@ int doCommand(char *commandline, int *ret1, int *ret2, int *ret3) {
   }
 
   if (strcmp(command, "set_zoom_value") == 0) {
-    if ((arg1 == NULL) || (intarg1 < 0) || (intarg1 > 1023)) {
+    if ((arg1 == NULL) || (intarg1 < 0) || (intarg1 > 15000)) {
       return 41;
     }
     if (VISCA_set_zoom_value(&iface, &camera, intarg1)!=VISCA_SUCCESS) {
