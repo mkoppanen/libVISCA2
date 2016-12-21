@@ -91,26 +91,32 @@ _VISCA_send_packet(VISCAInterface_t *iface, VISCACamera_t *camera, VISCAPacket_t
     return _VISCA_write_packet_data(iface,camera,packet);
 }
 
-
 uint32_t
 _VISCA_get_packet(VISCAInterface_t *iface)
 {
-    int pos=0;
+    int pos = 0;
+    int timeout_counter = 0;
     int bytes_read;
 
     // wait for message
-    ioctl(iface->port_fd, FIONREAD, &(iface->bytes));
-    while (iface->bytes==0) {
-	usleep(0);
-	ioctl(iface->port_fd, FIONREAD, &(iface->bytes));
-    }
+    do
+    {
+        ioctl(iface->port_fd, FIONREAD, &(iface->bytes));
+        usleep(0);
+        if (timeout_counter++ > 20000) {
+            return VISCA_FAILURE;
+        }
+    } while (iface->bytes == 0);
 
     // get octets one by one
-    bytes_read=read(iface->port_fd, iface->ibuf, 1);
-    while (iface->ibuf[pos]!=VISCA_TERMINATOR) {
-	pos++;
-	bytes_read=read(iface->port_fd, &iface->ibuf[pos], 1);
-	usleep(0);
+    bytes_read = read(iface->port_fd, iface->ibuf, 1);
+    while (iface->ibuf[pos] != VISCA_TERMINATOR)
+    {
+        if (++pos >= VISCA_INPUT_BUFFER_SIZE) {
+            return VISCA_FAILURE;
+        }
+        bytes_read = read(iface->port_fd, &iface->ibuf[pos], 1);
+        usleep(0);
     }
     iface->bytes=pos+1;
 
