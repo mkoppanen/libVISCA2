@@ -103,11 +103,7 @@ _VISCA_get_packet(VISCAInterface_t *iface)
     {
         ioctl(iface->port_fd, FIONREAD, &(iface->bytes));
         usleep(0);
-        if (timeout_counter++ > 500)
-        {
-#if DEBUG
-    fprintf(stderr,"(%s): _VISCA_get_packet: timeout\n",__FILE__);
-#endif
+        if (timeout_counter++ > 20000) {
             return VISCA_FAILURE;
         }
     } while (iface->bytes == 0);
@@ -116,11 +112,7 @@ _VISCA_get_packet(VISCAInterface_t *iface)
     bytes_read = read(iface->port_fd, iface->ibuf, 1);
     while (iface->ibuf[pos] != VISCA_TERMINATOR)
     {
-        if (++pos >= VISCA_INPUT_BUFFER_SIZE)
-        {
-#if DEBUG
-    fprintf(stderr,"(%s): _VISCA_get_packet: overflow\n",__FILE__);
-#endif
+        if (++pos >= VISCA_INPUT_BUFFER_SIZE) {
             return VISCA_FAILURE;
         }
         bytes_read = read(iface->port_fd, &iface->ibuf[pos], 1);
