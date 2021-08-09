@@ -1,0 +1,94 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build-ubuntu:
+    # The CMake configure and build commands are platform agnostic and should work equally
+    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}}
+
+  build-win64:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: 'Fetch Git Tags'
+      shell: bash
+      run: |
+        git fetch --prune --unshallow
+        echo "MY_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+        echo "MY_GIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: 'Copy DLL'
+      shell: bash
+      run: |
+        mkdir publish-lib
+        cp visca/libvisca.h publish-lib/
+        cp build/visca/${{env.BUILD_TYPE}}/*.{dll,lib} publish-lib/
+        mkdir publish-ex
+        cp build/visca/${{env.BUILD_TYPE}}/*.{dll,lib} publish-ex/
+        cp build/examples/${{env.BUILD_TYPE}}/*.exe publish-ex/
+
+    - name: 'Publish Libraries'
+      if: success()
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: libvisca-ip-${{env.MY_GIT_HASH}}
+        path: publish-lib/*
+        if-no-files-found: error
+
+    - name: 'Publish Examples'
+      if: success()
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: libvisca-ip-examples-${{env.MY_GIT_HASH}}
+        path: publish-ex/*
+        if-no-files-found: error
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
