@@ -420,33 +420,7 @@ typedef __int16 int16_t;
 #endif
 #endif /* _MSC_VER */
 
-#elif __AVR__
-
-#include "v24.h"
-
-/* timeout in us */
-#define VISCA_SERIAL_WAIT 100000
-
-/* size of the local packet buffer */
-#define VISCA_INPUT_BUFFER_SIZE 32
-
-/* This is the interface for the AVR platform.
- */
-typedef struct _VISCA_interface {
-	// RS232 data:
-	v24_port_t port_fd;
-
-	// VISCA data:
-	int address;
-	int broadcast;
-
-	// RS232 input buffer
-	unsigned char ibuf[VISCA_INPUT_BUFFER_SIZE];
-	int bytes;
-	int type;
-} VISCAInterface_t;
-
-#else
+#else // assumes POSIX platform
 
 #include <termios.h>
 #include <stdint.h>
