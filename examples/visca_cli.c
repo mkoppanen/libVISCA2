@@ -471,19 +471,7 @@ void open_interface()
 
 void close_interface()
 {
-	// read the rest of the data: (should be empty)
-	unsigned char packet[3000];
-	uint32_t buffer_size = 3000;
-
 	VISCA_usleep(2000);
-
-	if (VISCA_unread_bytes(&iface, packet, &buffer_size) != VISCA_SUCCESS) {
-		uint32_t i;
-		fprintf(stderr, "ERROR: %u bytes not processed", buffer_size);
-		for (i = 0; i < buffer_size; i++)
-			fprintf(stderr, "%2x ", packet[i]);
-		fprintf(stderr, "\n");
-	}
 
 	VISCA_close_serial(&iface);
 }

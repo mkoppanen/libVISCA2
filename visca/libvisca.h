@@ -369,6 +369,14 @@
 extern "C" {
 #endif
 
+struct _VISCA_interface;
+
+typedef struct _VISCA_callback {
+	int (*write)(struct _VISCA_interface *iface, const void *buf, int length);
+	int (*read)(struct _VISCA_interface *iface, void *buf, int length);
+	void (*wait_read)(struct _VISCA_interface *iface);
+} VISCA_callback_t;
+
 #ifdef VISCA_WIN
 
 #include <windows.h>
@@ -381,10 +389,9 @@ extern "C" {
 
 /* This is the interface for the Windows platform.
  */
-typedef struct _VISCA_interface {
-	// RS232 data:
-	HANDLE port_fd;
-	int baud;
+struct _VISCA_interface {
+	const VISCA_callback_t *callback;
+	void *ctx;
 
 	// VISCA data:
 	int address;
@@ -394,7 +401,8 @@ typedef struct _VISCA_interface {
 	unsigned char ibuf[VISCA_INPUT_BUFFER_SIZE];
 	int bytes;
 	int type;
-} VISCAInterface_t;
+};
+typedef struct _VISCA_interface VISCAInterface_t;
 
 #ifdef _MSC_VER
 typedef unsigned __int8 uint8_t;
@@ -433,11 +441,9 @@ typedef __int16 int16_t;
 
 /* This is the interface for the POSIX platform.
  */
-typedef struct _VISCA_interface {
-	// RS232 data:
-	int port_fd;
-	struct termios options;
-	uint32_t baud;
+struct _VISCA_interface {
+	const VISCA_callback_t *callback;
+	void *ctx;
 
 	// VISCA data:
 	uint32_t address;
@@ -447,8 +453,8 @@ typedef struct _VISCA_interface {
 	unsigned char ibuf[VISCA_INPUT_BUFFER_SIZE];
 	uint32_t bytes;
 	uint32_t type;
-
-} VISCAInterface_t;
+};
+typedef struct _VISCA_interface VISCAInterface_t;
 
 #endif
 
@@ -500,8 +506,6 @@ VISCA_API uint32_t _VISCA_send_packet(VISCAInterface_t *iface, VISCACamera_t *ca
 VISCA_API uint32_t _VISCA_get_packet(VISCAInterface_t *iface);
 
 VISCA_API uint32_t VISCA_open_serial(VISCAInterface_t *iface, const char *device_name);
-
-VISCA_API uint32_t VISCA_unread_bytes(VISCAInterface_t *iface, unsigned char *buffer, uint32_t *buffer_size);
 
 VISCA_API uint32_t VISCA_close_serial(VISCAInterface_t *iface);
 
