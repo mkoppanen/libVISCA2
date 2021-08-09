@@ -42,20 +42,43 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: 'Fetch Git Tags'
+      shell: bash
+      run: |
+        git fetch --prune --unshallow
+        echo "MY_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+        echo "MY_GIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Publish
+    - name: 'Copy DLL'
+      shell: bash
+      run: |
+        mkdir publish-lib
+        cp visca/libvisca.h publish-lib/
+        cp build/visca/${{env.BUILD_TYPE}}/*.{dll,lib} publish-lib/
+        mkdir publish-ex
+        cp build/visca/${{env.BUILD_TYPE}}/*.{dll,lib} publish-ex/
+        cp build/examples/${{env.BUILD_TYPE}}/*.exe publish-ex/
+
+    - name: 'Publish Libraries'
       if: success()
-      uses: actions/upload-artifact@v2.2.0
+      uses: actions/upload-artifact@v2.2.4
       with:
-        name: libvisca-ip-examples
-        path: |
-          ${{github.workspace}}/build/**/*.exe
-          ${{github.workspace}}/build/**/*.dll
+        name: libvisca-ip-${{env.MY_GIT_HASH}}
+        path: publish-lib/*
+        if-no-files-found: error
+
+    - name: 'Publish Examples'
+      if: success()
+      uses: actions/upload-artifact@v2.2.4
+      with:
+        name: libvisca-ip-examples-${{env.MY_GIT_HASH}}
+        path: publish-ex/*
         if-no-files-found: error
 
   build-macos:
