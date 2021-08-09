@@ -19,7 +19,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 #include <string.h>
 #include <errno.h>
 
@@ -29,152 +28,126 @@
 #include "debugging.h"
 #include "libvisca.h"
 
-
-uint32_t
-_VISCA_write_packet_data(VISCAInterface_t *iface, VISCACamera_t *camera, VISCAPacket_t *packet)
+uint32_t _VISCA_write_packet_data(VISCAInterface_t *iface, VISCACamera_t *camera, VISCAPacket_t *packet)
 {
-    int i;
+	int i;
 
-    for ( i=0; i<packet->length; ++i )
-    {
-	v24Putc(iface->port_fd, packet->bytes[i]);
-    }
-    return VISCA_SUCCESS;
+	for (i = 0; i < packet->length; ++i) {
+		v24Putc(iface->port_fd, packet->bytes[i]);
+	}
+	return VISCA_SUCCESS;
 }
 
-
-
-uint32_t
-_VISCA_send_packet(VISCAInterface_t *iface, VISCACamera_t *camera, VISCAPacket_t *packet)
+uint32_t _VISCA_send_packet(VISCAInterface_t *iface, VISCACamera_t *camera, VISCAPacket_t *packet)
 {
-    // check data:
-    if ((iface->address>7)||(camera->address>7)||(iface->broadcast>1))
-    {
+	// check data:
+	if ((iface->address > 7) || (camera->address > 7) || (iface->broadcast > 1)) {
 #ifdef DEBUG
-	dbg_ReportStrP(PSTR("_VISCA_send_packet: bad header parms\n"));
+		dbg_ReportStrP(PSTR("_VISCA_send_packet: bad header parms\n"));
 #endif
-	return VISCA_FAILURE;
-    }
+		return VISCA_FAILURE;
+	}
 
-    // build header:
-    packet->bytes[0]=0x80;
-    packet->bytes[0]|=(iface->address << 4);
-    if (iface->broadcast>0)
-    {
-	packet->bytes[0]|=(iface->broadcast << 3);
-	packet->bytes[0]&=0xF8;
-    }
-    else
-	packet->bytes[0]|=camera->address;
-    
-    // append footer
-    _VISCA_append_byte(packet,VISCA_TERMINATOR);
+	// build header:
+	packet->bytes[0] = 0x80;
+	packet->bytes[0] |= (iface->address << 4);
+	if (iface->broadcast > 0) {
+		packet->bytes[0] |= (iface->broadcast << 3);
+		packet->bytes[0] &= 0xF8;
+	} else
+		packet->bytes[0] |= camera->address;
 
-    return _VISCA_write_packet_data(iface,camera,packet);
+	// append footer
+	_VISCA_append_byte(packet, VISCA_TERMINATOR);
+
+	return _VISCA_write_packet_data(iface, camera, packet);
 }
 
-
-uint32_t
-_VISCA_get_packet(VISCAInterface_t *iface)
+uint32_t _VISCA_get_packet(VISCAInterface_t *iface)
 {
-    int pos=0;
-    int curr;
+	int pos = 0;
+	int curr;
 
-    // get octets one by one
-    curr = v24Getc(iface->port_fd);
-    if ( curr<0 )
-    {
-#ifdef DEBUG
-	dbg_ReportStrP(PSTR("_VISCA_get_packet: timeout\n"));
-#endif	
-	return VISCA_FAILURE;
-    }
-    iface->ibuf[pos]=(BYTE)curr;
-    while ( iface->ibuf[pos]!=VISCA_TERMINATOR )
-    {
-	if ( ++pos >= VISCA_INPUT_BUFFER_SIZE )
-	{
-#ifdef DEBUG
-	    dbg_ReportStrP(PSTR("_VISCA_get_packet: overflow\n"));
-#endif	
-	    return VISCA_FAILURE;
-	}
+	// get octets one by one
 	curr = v24Getc(iface->port_fd);
-	if ( curr<0 )
-	{
+	if (curr < 0) {
 #ifdef DEBUG
-	    dbg_ReportStrP(PSTR("_VISCA_get_packet: timeout\n"));
-#endif	
-	    return VISCA_FAILURE;
+		dbg_ReportStrP(PSTR("_VISCA_get_packet: timeout\n"));
+#endif
+		return VISCA_FAILURE;
 	}
-	iface->ibuf[pos]=(BYTE)curr;
-    }
-    iface->bytes=pos+1;
+	iface->ibuf[pos] = (BYTE)curr;
+	while (iface->ibuf[pos] != VISCA_TERMINATOR) {
+		if (++pos >= VISCA_INPUT_BUFFER_SIZE) {
+#ifdef DEBUG
+			dbg_ReportStrP(PSTR("_VISCA_get_packet: overflow\n"));
+#endif
+			return VISCA_FAILURE;
+		}
+		curr = v24Getc(iface->port_fd);
+		if (curr < 0) {
+#ifdef DEBUG
+			dbg_ReportStrP(PSTR("_VISCA_get_packet: timeout\n"));
+#endif
+			return VISCA_FAILURE;
+		}
+		iface->ibuf[pos] = (BYTE)curr;
+	}
+	iface->bytes = pos + 1;
 
-    return VISCA_SUCCESS;
+	return VISCA_SUCCESS;
 }
-
-
 
 /***********************************/
 /*       SYSTEM  FUNCTIONS         */
 /***********************************/
 
-uint32_t
-VISCA_open_serial(VISCAInterface_t *iface, const char *device_name)
+uint32_t VISCA_open_serial(VISCAInterface_t *iface, const char *device_name)
 {
-    /* Hey, this is a microcontroller. We don't have UART device names. ;-)
+	/* Hey, this is a microcontroller. We don't have UART device names. ;-)
      *
      * The used already opened
      */
-    if ( !iface || !device_name )
-    {
+	if (!iface || !device_name) {
 #ifdef DEBUG
-	dbg_ReportStrP(PSTR("VISCA_open_serial: bad parms\n"));
+		dbg_ReportStrP(PSTR("VISCA_open_serial: bad parms\n"));
 #endif
-	return VISCA_FAILURE;
-    }
+		return VISCA_FAILURE;
+	}
 
-    iface->port_fd = UART_VISCA;
-    iface->address=0;
+	iface->port_fd = UART_VISCA;
+	iface->address = 0;
 
-    return VISCA_SUCCESS;
+	return VISCA_SUCCESS;
 }
 
-uint32_t
-VISCA_unread_bytes(VISCAInterface_t *iface, unsigned char *buffer, uint32_t *buffer_size)
+uint32_t VISCA_unread_bytes(VISCAInterface_t *iface, unsigned char *buffer, uint32_t *buffer_size)
 {
-  // TODO
-  *buffer_size = 0;
-  return VISCA_SUCCESS;
+	// TODO
+	*buffer_size = 0;
+	return VISCA_SUCCESS;
 }
 
-uint32_t
-VISCA_close_serial(VISCAInterface_t *iface)
+uint32_t VISCA_close_serial(VISCAInterface_t *iface)
 {
-    if ( !iface )
-    {
+	if (!iface) {
 #ifdef DEBUG
-	dbg_ReportStrP(PSTR("_VISCA_close_serial: bad header parms\n"));
+		dbg_ReportStrP(PSTR("_VISCA_close_serial: bad header parms\n"));
 #endif
-	return VISCA_FAILURE;
-    }
-    if (iface->port_fd!=0xFF)
-    {
+		return VISCA_FAILURE;
+	}
+	if (iface->port_fd != 0xFF) {
 
-	/* Hey, this is a microcontroller. The port must be closed outside this
+		/* Hey, this is a microcontroller. The port must be closed outside this
 	 * function call.
 	 */
-	iface->port_fd = 0xFF;
-	return VISCA_SUCCESS;
-    }
-    else
-	return VISCA_FAILURE;
+		iface->port_fd = 0xFF;
+		return VISCA_SUCCESS;
+	} else
+		return VISCA_FAILURE;
 }
 
-uint32_t
-VISCA_usleep(uint32_t useconds)
+uint32_t VISCA_usleep(uint32_t useconds)
 {
-  return (uint32_t) usleep(useconds);
+	return (uint32_t)usleep(useconds);
 }
-
