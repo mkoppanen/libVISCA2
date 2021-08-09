@@ -1,3 +1,8 @@
+libvisca-ip
+
+This is a libvisca repository for VISCA over TCP/IP.
+
+-- README from https://github.com/mkoppanen/libVISCA2 --
 
 Improvements in 2.0.0: 
   
