@@ -24,6 +24,7 @@ jobs:
         dirty=$(git ls-files --modified)
         set +x
         if [[ $dirty ]]; then
+          git diff
           echo "Error: File(s) are not properly formatted."
           echo "$dirty"
           exit 1
