@@ -375,6 +375,7 @@ typedef struct _VISCA_callback {
 	int (*write)(struct _VISCA_interface *iface, const void *buf, int length);
 	int (*read)(struct _VISCA_interface *iface, void *buf, int length);
 	void (*wait_read)(struct _VISCA_interface *iface);
+	void (*clear_error)(struct _VISCA_interface *iface);
 } VISCA_callback_t;
 
 #ifdef VISCA_WIN

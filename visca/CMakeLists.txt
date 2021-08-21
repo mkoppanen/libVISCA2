@@ -1,5 +1,9 @@
 IF (WIN32)
-	ADD_LIBRARY(visca SHARED libvisca.c libvisca_win32.c)
+	ADD_LIBRARY(visca SHARED
+		libvisca.c
+		libvisca_win32.c
+		libvisca_serial_win32.c
+	)
 	SET_TARGET_PROPERTIES(visca PROPERTIES COMPILE_FLAGS "-DDLL_EXPORTS=1")
 ELSE()
 	ADD_LIBRARY(visca SHARED
