@@ -106,7 +106,7 @@ set_zoom_tele_speed <speed>      (set the zoom to maximum with a speed
 set_zoom_wide_speed <speed>      (set the zoom to minimum with a speed 
                                   between 2 and 7)
 set_zoom_value <zoom>            (set the zoom to the given value 
-                                  between 0 and 1023)
+                                  between 0 and 65535)
 set_focus_far_speed <speed>      (not for D30)
 set_focus_near_speed <speed>     (not for D30)
 set_focus_value <focus>          (set the focus to the given value 
@@ -1114,7 +1114,7 @@ int doCommand(char *commandline, int *ret1, int *ret2, int *ret3)
 	}
 
 	if (strcmp(command, "set_zoom_value") == 0) {
-		if ((arg1 == NULL) || (intarg1 < 0) || (intarg1 > 1023)) {
+		if ((arg1 == NULL) || (intarg1 < 0) || (intarg1 > 65535)) {
 			return 41;
 		}
 		if (VISCA_set_zoom_value(&iface, &camera, intarg1) != VISCA_SUCCESS) {
