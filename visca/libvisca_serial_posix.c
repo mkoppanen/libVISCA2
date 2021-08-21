@@ -25,18 +25,67 @@ static int visca_serial_cb_read(VISCAInterface_t *iface, void *buf, int length)
 
 static void visca_serial_cb_wait_read(VISCAInterface_t *iface)
 {
+	// TODO: why not use select?
 	VISCA_serial_ctx_t *ctx = iface->ctx;
-	ioctl(ctx->port_fd, FIONREAD, &(iface->bytes));
-	while (iface->bytes == 0) {
+	for (;;) {
+		int bytes;
+		ioctl(ctx->port_fd, FIONREAD, &bytes);
+		if (bytes != 0)
+			break;
 		usleep(0);
-		ioctl(ctx->port_fd, FIONREAD, &(iface->bytes));
 	}
 }
 
+static uint32_t VISCA_unread_bytes(VISCAInterface_t *iface, unsigned char *buffer, uint32_t *buffer_size)
+{
+	if (!iface || !iface->ctx)
+		return VISCA_FAILURE;
+	VISCA_serial_ctx_t *ctx = iface->ctx;
+
+	uint32_t bytes = 0;
+	*buffer_size = 0;
+
+	ioctl(ctx->port_fd, FIONREAD, &bytes);
+	if (bytes > 0) {
+		bytes = (bytes > *buffer_size) ? *buffer_size : bytes;
+		read(ctx->port_fd, &buffer, bytes);
+		*buffer_size = bytes;
+		return VISCA_FAILURE;
+	}
+	return VISCA_SUCCESS;
+}
+
+static int visca_serial_cb_close(VISCAInterface_t *iface)
+{
+	if (!iface || !iface->ctx)
+		return VISCA_FAILURE;
+	VISCA_serial_ctx_t *ctx = iface->ctx;
+
+	// read the rest of the data: (should be empty)
+	unsigned char packet[3000];
+	uint32_t buffer_size = 3000;
+
+	if (VISCA_unread_bytes(iface, packet, &buffer_size) != VISCA_SUCCESS) {
+		uint32_t i;
+		fprintf(stderr, "ERROR: %u bytes not processed", buffer_size);
+		for (i = 0; i < buffer_size; i++)
+			fprintf(stderr, "%2x ", packet[i]);
+		fprintf(stderr, "\n");
+	}
+
+	if (ctx->port_fd != -1) {
+		close(ctx->port_fd);
+		free(ctx);
+		iface->ctx = NULL;
+		return VISCA_SUCCESS;
+	} else
+		return VISCA_FAILURE;
+}
 static VISCA_callback_t visca_serial_cb = {
 	.write = visca_serial_cb_write,
 	.read = visca_serial_cb_read,
 	.wait_read = visca_serial_cb_wait_read,
+	.close = visca_serial_cb_close,
 };
 
 uint32_t VISCA_open_serial(VISCAInterface_t *iface, const char *device_name)
@@ -84,50 +133,4 @@ uint32_t VISCA_open_serial(VISCAInterface_t *iface, const char *device_name)
 	iface->ctx = ctx;
 
 	return VISCA_SUCCESS;
-}
-
-static uint32_t VISCA_unread_bytes(VISCAInterface_t *iface, unsigned char *buffer, uint32_t *buffer_size)
-{
-	if (!iface || !iface->ctx)
-		return VISCA_FAILURE;
-	VISCA_serial_ctx_t *ctx = iface->ctx;
-
-	uint32_t bytes = 0;
-	*buffer_size = 0;
-
-	ioctl(ctx->port_fd, FIONREAD, &bytes);
-	if (bytes > 0) {
-		bytes = (bytes > *buffer_size) ? *buffer_size : bytes;
-		read(ctx->port_fd, &buffer, bytes);
-		*buffer_size = bytes;
-		return VISCA_FAILURE;
-	}
-	return VISCA_SUCCESS;
-}
-
-uint32_t VISCA_close_serial(VISCAInterface_t *iface)
-{
-	if (!iface || !iface->ctx)
-		return VISCA_FAILURE;
-	VISCA_serial_ctx_t *ctx = iface->ctx;
-
-	// read the rest of the data: (should be empty)
-	unsigned char packet[3000];
-	uint32_t buffer_size = 3000;
-
-	if (VISCA_unread_bytes(iface, packet, &buffer_size) != VISCA_SUCCESS) {
-		uint32_t i;
-		fprintf(stderr, "ERROR: %u bytes not processed", buffer_size);
-		for (i = 0; i < buffer_size; i++)
-			fprintf(stderr, "%2x ", packet[i]);
-		fprintf(stderr, "\n");
-	}
-
-	if (ctx->port_fd != -1) {
-		close(ctx->port_fd);
-		free(ctx);
-		iface->ctx = NULL;
-		return VISCA_SUCCESS;
-	} else
-		return VISCA_FAILURE;
 }

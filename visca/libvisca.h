@@ -376,6 +376,7 @@ typedef struct _VISCA_callback {
 	int (*read)(struct _VISCA_interface *iface, void *buf, int length);
 	void (*wait_read)(struct _VISCA_interface *iface);
 	void (*clear_error)(struct _VISCA_interface *iface);
+	int (*close)(struct _VISCA_interface *iface);
 } VISCA_callback_t;
 
 #ifdef VISCA_WIN
@@ -508,7 +509,7 @@ VISCA_API uint32_t _VISCA_get_packet(VISCAInterface_t *iface);
 
 VISCA_API uint32_t VISCA_open_serial(VISCAInterface_t *iface, const char *device_name);
 
-VISCA_API uint32_t VISCA_close_serial(VISCAInterface_t *iface);
+VISCA_API uint32_t VISCA_close(VISCAInterface_t *iface);
 
 /* COMMANDS */
 

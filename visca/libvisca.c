@@ -39,6 +39,71 @@ void _VISCA_append_byte(VISCAPacket_t *packet, unsigned char byte)
 	(packet->length)++;
 }
 
+uint32_t _VISCA_write_packet_data(VISCAInterface_t *iface, VISCACamera_t *camera, VISCAPacket_t *packet)
+{
+	int bytes_written;
+
+	bytes_written = iface->callback->write(iface, packet->bytes, packet->length);
+	if (bytes_written < packet->length)
+		return VISCA_FAILURE;
+	else
+		return VISCA_SUCCESS;
+}
+
+uint32_t _VISCA_send_packet(VISCAInterface_t *iface, VISCACamera_t *camera, VISCAPacket_t *packet)
+{
+	// check data:
+	if ((iface->address > 7) || (camera->address > 7) || (iface->broadcast > 1)) {
+#if DEBUG
+		fprintf(stderr, "(%s): Invalid header parameters\n", __FILE__);
+		fprintf(stderr, " %d %d %d   \n", iface->address, camera->address, iface->broadcast);
+#endif
+		return VISCA_FAILURE;
+	}
+
+	// build header:
+	packet->bytes[0] = 0x80;
+	packet->bytes[0] |= (iface->address << 4);
+	if (iface->broadcast > 0) {
+		packet->bytes[0] |= (iface->broadcast << 3);
+		packet->bytes[0] &= 0xF8;
+	} else
+		packet->bytes[0] |= camera->address;
+
+	// append footer
+	_VISCA_append_byte(packet, VISCA_TERMINATOR);
+
+	return _VISCA_write_packet_data(iface, camera, packet);
+}
+
+uint32_t _VISCA_get_packet(VISCAInterface_t *iface)
+{
+	int pos = 0;
+	int bytes_read;
+
+	// wait for message
+	if (iface->callback->wait_read)
+		iface->callback->wait_read(iface);
+
+	// get octets one by one
+	bytes_read = iface->callback->read(iface, iface->ibuf, 1);
+	if (bytes_read <= 0) {
+		return VISCA_FAILURE;
+	}
+	while (iface->ibuf[pos] != VISCA_TERMINATOR) {
+		if (++pos >= VISCA_INPUT_BUFFER_SIZE) {
+			return VISCA_FAILURE;
+		}
+		bytes_read = iface->callback->read(iface, iface->ibuf + pos, 1);
+		if (bytes_read <= 0) {
+			return VISCA_FAILURE;
+		}
+	}
+	iface->bytes = pos + 1;
+
+	return VISCA_SUCCESS;
+}
+
 void _VISCA_init_packet(VISCAPacket_t *packet)
 {
 	// we start writing at byte 1, the first byte will be filled by the
@@ -3182,4 +3247,12 @@ VISCA_API uint32_t VISCA_get_md_obj_pos(VISCAInterface_t *iface, VISCACamera_t *
 		*status = (iface->ibuf[4] & 0x0f);
 		return VISCA_SUCCESS;
 	}
+}
+
+uint32_t VISCA_close(VISCAInterface_t *iface)
+{
+	if (iface->callback->close)
+		return (uint32_t)iface->callback->close(iface);
+	else
+		return VISCA_SUCCESS;
 }

@@ -130,6 +130,6 @@ int main(int argc, char **argv)
 	VISCA_set_zoom_value(&iface, &camera, 0x0D00);
 	VISCA_set_shutter_value(&iface, &camera, 0x0D00);
 
-	VISCA_close_serial(&iface);
+	VISCA_close(&iface);
 	exit(0);
 }

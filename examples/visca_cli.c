@@ -441,7 +441,7 @@ void open_interface()
 		_RPTF0(_CRT_WARN, "unable to set address\n");
 #endif
 		fprintf(stderr, "visca-cli: unable to set address\n");
-		VISCA_close_serial(&iface);
+		VISCA_close(&iface);
 		exit(1);
 	}
 
@@ -452,7 +452,7 @@ void open_interface()
 		_RPTF0(_CRT_WARN, "unable to clear interface\n");
 #endif
 		fprintf(stderr, "visca-cli: unable to clear interface\n");
-		VISCA_close_serial(&iface);
+		VISCA_close(&iface);
 		exit(1);
 	}
 	if (VISCA_get_camera_info(&iface, &camera) != VISCA_SUCCESS) {
@@ -460,7 +460,7 @@ void open_interface()
 		_RPTF0(_CRT_WARN, "unable to oget camera infos\n");
 #endif
 		fprintf(stderr, "visca-cli: unable to oget camera infos\n");
-		VISCA_close_serial(&iface);
+		VISCA_close(&iface);
 		exit(1);
 	}
 
@@ -473,7 +473,7 @@ void close_interface()
 {
 	VISCA_usleep(2000);
 
-	VISCA_close_serial(&iface);
+	VISCA_close(&iface);
 }
 
 /* This subroutine tries to execute the commandline given in char *commandline

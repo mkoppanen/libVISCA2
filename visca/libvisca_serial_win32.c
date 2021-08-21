@@ -36,10 +36,25 @@ static int visca_serial_cb_read(VISCAInterface_t *iface, void *buf, int length)
 	return (int)iBytesRead;
 }
 
+static int visca_serial_cb_close(VISCAInterface_t *iface)
+{
+	if (!iface || !iface->ctx)
+		return VISCA_FAILURE;
+	VISCA_serial_ctx_t *ctx = iface->ctx;
+
+	if (ctx->port_fd != NULL) {
+		CloseHandle(ctx->port_fd);
+		free(ctx);
+		return VISCA_SUCCESS;
+	} else
+		return VISCA_FAILURE;
+}
+
 static VISCA_callback_t visca_serial_cb = {
 	.write = visca_serial_cb_write,
 	.read = visca_serial_cb_read,
 	.clear_error = visca_serial_cb_clear_error,
+	.close = visca_serial_cb_close,
 };
 
 uint32_t VISCA_open_serial(VISCAInterface_t *iface, const char *device_name)
@@ -123,18 +138,4 @@ uint32_t VISCA_open_serial(VISCAInterface_t *iface, const char *device_name)
 	iface->ctx = ctx;
 
 	return VISCA_SUCCESS;
-}
-
-uint32_t VISCA_close_serial(VISCAInterface_t *iface)
-{
-	if (!iface || !iface->ctx)
-		return VISCA_FAILURE;
-	VISCA_serial_ctx_t *ctx = iface->ctx;
-
-	if (ctx->port_fd != NULL) {
-		CloseHandle(ctx->port_fd);
-		free(ctx);
-		return VISCA_SUCCESS;
-	} else
-		return VISCA_FAILURE;
 }
