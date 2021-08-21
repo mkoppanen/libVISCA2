@@ -429,14 +429,23 @@ char *process_commandline(int argc, char **argv)
 void open_interface()
 {
 	int camera_num;
-	if (VISCA_open_serial(&iface, ttydev) != VISCA_SUCCESS) {
+	char *sep;
+	if (sep = strrchr(ttydev, ':')) {
+		int port = atoi(sep + 1);
+		char *host = strdup(ttydev);
+		host[sep - ttydev] = '\0';
+		if (VISCA_open_tcp(&iface, host, port) != VISCA_SUCCESS) {
+			fprintf(stderr, "visca-cli: unable to open tcp device %s:%d\n", host, port);
+			exit(1);
+		}
+		free(host);
+	} else if (VISCA_open_serial(&iface, ttydev) != VISCA_SUCCESS) {
 		fprintf(stderr, "visca-cli: unable to open serial device %s\n", ttydev);
 		exit(1);
 	}
 
 	iface.broadcast = 0;
-	VISCA_set_address(&iface, &camera_num);
-	if (VISCA_set_address(&iface, &camera_num) != VISCA_SUCCESS) {
+	if (!sep && VISCA_set_address(&iface, &camera_num) != VISCA_SUCCESS) {
 #ifdef WIN
 		_RPTF0(_CRT_WARN, "unable to set address\n");
 #endif

@@ -22,6 +22,7 @@
 #include "../visca/libvisca.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <fcntl.h> /* File control definitions */
 #include <errno.h> /* Error number definitions */
@@ -38,19 +39,28 @@ int main(int argc, char **argv)
 	uint8_t value;
 	uint16_t zoom;
 	uint16_t pan_pos, tilt_pos;
+	char *sep;
 
 	if (argc < 2) {
 		fprintf(stderr, "%s usage: %s <serial port device>\n", argv[0], argv[0]);
 		exit(1);
 	}
 
-	if (VISCA_open_serial(&iface, argv[1]) != VISCA_SUCCESS) {
+	if (sep = strrchr(argv[1], ':')) {
+		int port = atoi(sep + 1);
+		*sep = '\0';
+		if (VISCA_open_tcp(&iface, argv[1], port) != VISCA_SUCCESS) {
+			fprintf(stderr, "%s: unable to open tcp device %s:%d\n", argv[0], argv[1], port);
+			exit(1);
+		}
+	} else if (VISCA_open_serial(&iface, argv[1]) != VISCA_SUCCESS) {
 		fprintf(stderr, "%s: unable to open serial device %s\n", argv[0], argv[1]);
 		exit(1);
 	}
 
 	iface.broadcast = 0;
-	VISCA_set_address(&iface, &camera_num);
+	if (!sep)
+		VISCA_set_address(&iface, &camera_num);
 	camera.address = 1;
 	VISCA_clear(&iface, &camera);
 

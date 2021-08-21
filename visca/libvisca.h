@@ -508,6 +508,7 @@ VISCA_API uint32_t _VISCA_send_packet(VISCAInterface_t *iface, VISCACamera_t *ca
 VISCA_API uint32_t _VISCA_get_packet(VISCAInterface_t *iface);
 
 VISCA_API uint32_t VISCA_open_serial(VISCAInterface_t *iface, const char *device_name);
+VISCA_API uint32_t VISCA_open_tcp(VISCAInterface_t *iface, const char *hostname, int port);
 
 VISCA_API uint32_t VISCA_close(VISCAInterface_t *iface);
 
