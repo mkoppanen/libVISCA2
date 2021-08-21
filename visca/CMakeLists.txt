@@ -1,9 +1,18 @@
 IF (WIN32)
-  ADD_LIBRARY(visca SHARED libvisca.c libvisca_win32.c)
-  SET_TARGET_PROPERTIES(visca PROPERTIES COMPILE_FLAGS "-DDLL_EXPORTS=1")
+	ADD_LIBRARY(visca SHARED
+		libvisca.c
+		libvisca_win32.c
+		libvisca_serial_win32.c
+	)
+	SET_TARGET_PROPERTIES(visca PROPERTIES COMPILE_FLAGS "-DDLL_EXPORTS=1")
 ELSE()
-  ADD_LIBRARY(visca SHARED libvisca.c libvisca_posix.c)
-  SET_TARGET_PROPERTIES(visca PROPERTIES SOVERSION 0.2.0)
+	ADD_LIBRARY(visca SHARED
+		libvisca.c
+		libvisca_posix.c
+		libvisca_serial_posix.c
+	)
+
+SET_TARGET_PROPERTIES(visca PROPERTIES SOVERSION 0.2.0)
 ENDIF()
 
 INSTALL(TARGETS visca DESTINATION lib${LIB_SUFFIX})
