@@ -2427,29 +2427,24 @@ int doCommand(char *commandline, int *ret1, int *ret2, int *ret3)
 	return 40;
 }
 
-int main(int argc, char **argv)
+int run_cmdline(char *commandline)
 {
-	char *commandline;
 	int errorcode, ret1, ret2, ret3;
-
-	commandline = process_commandline(argc, argv);
-
-	open_interface();
 
 	errorcode = doCommand(commandline, &ret1, &ret2, &ret3);
 	switch (errorcode) {
 	case 10:
 		printf("10 OK - no return value\n");
-		break;
+		return 0;
 	case 11:
 		printf("11 OK - one return value\nRET1: %i\n", ret1);
-		break;
+		return 0;
 	case 12:
 		printf("12 OK - two return values\nRET1: %i\nRET2: %i\n", ret1, ret2);
-		break;
+		return 0;
 	case 13:
 		printf("13 OK - three return values\nRET1: %i\nRET2: %i\nRET3: %i\n", ret1, ret2, ret3);
-		break;
+		return 0;
 	case 40:
 		printf("40 ERROR - command not recognized\n");
 		break;
@@ -2477,7 +2472,37 @@ int main(int argc, char **argv)
 	default:
 		printf("unknown error code: %i\n", errorcode);
 	}
+	return 1;
+}
+
+int main(int argc, char **argv)
+{
+	char *commandline;
+	int ret = 0;
+
+	commandline = process_commandline(argc, argv);
+
+	open_interface();
+
+	if (strcmp(commandline, "-") == 0) {
+		char line[80];
+		while (fgets(line, sizeof(line), stdin)) {
+			for (int i=0; i<sizeof(line); i++)
+				if (line[i]=='\r' || line[i]=='\n')
+					line[i] = 0;
+			if (strncmp(line, "echo ", 5) == 0) {
+				puts(line+5);
+				continue;
+			}
+			if (!line[0])
+				continue;
+			ret |= run_cmdline(line);
+		}
+	}
+	else {
+		ret = run_cmdline(commandline);
+	}
 
 	close_interface();
-	exit(0);
+	exit(ret);
 }
