@@ -1103,7 +1103,7 @@ int doCommand(char *commandline, int *ret1, int *ret2, int *ret3)
 #endif
 
 	if (strcmp(command, "set_zoom_tele_speed") == 0) {
-		if ((arg1 == NULL) || (intarg1 < 2) || (intarg1 > 7)) {
+		if ((arg1 == NULL) || (intarg1 < 0) || (intarg1 > 7)) {
 			return 41;
 		}
 		if (VISCA_set_zoom_tele_speed(&iface, &camera, intarg1) != VISCA_SUCCESS) {
@@ -1113,7 +1113,7 @@ int doCommand(char *commandline, int *ret1, int *ret2, int *ret3)
 	}
 
 	if (strcmp(command, "set_zoom_wide_speed") == 0) {
-		if ((arg1 == NULL) || (intarg1 < 2) || (intarg1 > 7)) {
+		if ((arg1 == NULL) || (intarg1 < 0) || (intarg1 > 7)) {
 			return 41;
 		}
 		if (VISCA_set_zoom_wide_speed(&iface, &camera, intarg1) != VISCA_SUCCESS) {
